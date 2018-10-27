@@ -55,22 +55,19 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
 
     //console.log(xScale(2))
 
-
+    //在
     var svg = d3.select(divname).append("svg")
         .attr("id", "chart")
-        //var svg = d3.select("#kmeans").append("svg")
         .attr("width", width + margin.left + margin.right) //The svg does not have margin
         .attr("height", height + margin.top + margin.bottom) //The svg does not have margin
 
-
-    svg.append("g")
-        .append("text")
+    //在head中增加一个迭代计数器  Add a counter of interation time 
+    d3.select("#head")
+        .append("p")     
         .attr("class", "label")
-        .attr("transform", "translate(" + (width - margin.left - margin.right - 25) +
-            "," + (height + margin.top + margin.bottom - 10) + ")")
-        .text("Initialize");
-
-
+        .attr("align","center")
+        .text("Drawing cycles");
+    //在svg中增加一个添加一个存放cycles的group  Add a group for the cycles
     var group = svg.append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
@@ -90,6 +87,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
      * Returns a point with the specified type and fill color and with random 
      * x,y-coordinates.
      */
+    //生产随机点！！！
     function getRandomPoint(type, fill)
     {
         return {
@@ -108,6 +106,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
     /** 
      * Generates a specified number of random points of the specified type.
      */
+    //生成num个type（point or centroid）类型的随机点 
     function initializePoints(num, type)
     {
         var result = [];
@@ -135,7 +134,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
      */
     function findClosestCentroid(point)
     {
-        var closest = {
+        var closecenter = {
             i: -1,
             distance: width * 2
         };
@@ -143,13 +142,13 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
         {
             var distance = getEuclidianDistance(d, point);
             // Only update when the centroid is closer
-            if (distance < closest.distance)
+            if (distance < closecenter.distance)
             {
-                closest.i = i;
-                closest.distance = distance;
+                closecenter.i = i;
+                closecenter.distance = distance;
             }
         });
-        return (centroids[closest.i]);
+        return (centroids[closecenter.i]);
     }
 
     /**
@@ -159,8 +158,8 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
     {
         points.forEach(function(d)
         {
-            var closest = findClosestCentroid(d);
-            d.fill = closest.fill;
+            var closecenter = findClosestCentroid(d);
+            d.fill = closecenter.fill;
         });
     }
 
@@ -217,7 +216,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
 
         // The data join
         var circle = group.selectAll("circle")
-            .data(data);
+        .data(data);
 
         // Create new elements as needed
         circle.enter().append("circle")
@@ -234,11 +233,11 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
             	{
             		if (d.type == "centroid")
             		{
-            			return 4;
+            			return 4;               //改为0 centroid 消失
             		}
             		else
             		{
-            			return 3;s
+            			return 3;
             		}
             	});
 
@@ -285,9 +284,9 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
     /**
      * Updates the text in the label.
      */
-    function setText(text)
+    function ItTime(text)
     {
-        svg.selectAll(".label").text(text);
+        d3.selectAll(".label").text(text);
     }
 
     /**
@@ -300,7 +299,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
     {
 
         // Update label
-        setText("Iteration " + iter + " of " + maxIter);
+        ItTime("Iteration " + iter );
 
         // Colorize the points
         colorizePoints();

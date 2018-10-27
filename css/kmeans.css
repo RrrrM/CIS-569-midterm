@@ -1,16 +1,9 @@
-.jumbotron {
-	/*background-color: white;*/
-	/*margin-bottom: 40px;*/
-	margin-top: 20px;
-	padding-bottom: 20px;
-	padding-top: 5px;
-}
 
 #chart {
 	background-color: #F5F2EB;
 	border: 1px solid black;
 }
-.kmeans-chart {
+#kmeans {
     font-family: "Open Sans", Arial, Helvetica, sans-serif;
     font-size: 9px;
     fill: #ccc;
@@ -23,8 +16,8 @@
     stroke-width: 2px;
 }
 
-/*.kmeans-chart */
-text.label {
+/*.kmeans-chart  计数器！！*/
+text.label {                
     font-size: 12px;
     fill: black;
 }
