@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  	<head>
+		<meta charset="UTF-8">
+		<title>CIS569 midterm</title>
+
+		<link rel="stylesheet" href="css/kmeans.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="https://d3js.org/d3.v3.min.js"></script>
+		<script src="js/kmeans.js"></script>
+	</head>
+  
+
+	<body>    
+		<script>
+
+			$(document).ready(function(){
+				kMeans("#kmeans", 1000, 600, 1000, 5, 50);
+	    	}); 
+	    </script>
+
+	    <div>
+
+	        <div class="jumbotron">
+                <h1 align="center">Car clustering</h1>
+                <p align="center">Rui Ming (01755846)</p>
+    		</div>
+
+    		<div class="row">
+				<div id="kmeans" class=kmeans-chart align="center"></div>	
+    		</div> 
+	    </div>
+	</body>  
+</html> 
