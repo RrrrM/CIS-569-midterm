@@ -1,31 +1,18 @@
 
 "use strict";
-//Change these values to choose between random points of fixed points
-var fix_centroid = "no";
-var fix_points = "no"
+
 
 function kMeans(divname, w, h, numPoints, numClusters, maxIter)
 {
     d3.csv("data/data.csv", function(data) {
 
         
-        //numPoints = 500;
-        
-        //console.log(elt)
 
-        // the current iteration
         var iter = 1;
         var centroids = [];
         var points = [];
         var datapoints = [];
 
-        
-            //console.log(result);
-            
-            
-
-
-        //var margin = {top: 30, right: 20, bottom: 80, left: 30}
         var margin = {
             top: 10,
             right: 20,
@@ -44,8 +31,8 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
         //To set range for random values
         var min1 = -4;  //-2
         var max1 = 3;   //2
-        var min2 = -4;  //-3
-        var max2 = 4;   //3
+        var min2 = 5;  //-3
+        var max2 = 6;   //3
 
         var xpScale = d3.scale.linear()
             .domain([456, 70])                //改为displacement的范围
@@ -54,7 +41,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
         
         var ypScale = d3.scale.linear()
             .domain([0.020557,0.07291])                //改为HP/W的范围
-            .range([4, -4])
+            .range([6, 5])
             .clamp('true');
             //.nice();
 
@@ -65,7 +52,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
             //.nice();
 
         var yScale = d3.scale.linear()
-            .domain([4, -4])                //改为HP/W的范围
+            .domain([6, 5])                //改为HP/W的范围
             .range([height, 0])
             .clamp('true');
             //.nice();
@@ -75,8 +62,8 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
         //在
         var svg = d3.select(divname).append("svg")
             .attr("id", "chart")
-            .attr("width", width + margin.left + margin.right) //The svg does not have margin
-            .attr("height", height + margin.top + margin.bottom) //The svg does not have margin
+            .attr("width", width + margin.left + margin.right) 
+            .attr("height", height + margin.top + margin.bottom) 
 
         //在head中增加一个迭代计数器  Add a counter of interation time 
         d3.select("#head")
@@ -90,64 +77,16 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
 
 
 
-        /**
-         * Computes the euclidian distance between two points.
-         */
-        function getEuclidianDistance(a, b)
-        {
-            var dx = b.x - a.x,
-                dy = b.y - a.y;
-            return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-        }
+        
 
         /**
          * Returns a point with the specified type and fill color and with random 
          * x,y-coordinates.
          */
-        //生产随机点！！！
-        function getRandomPoint(type, fill)
-        {
-            return {
-                //x: Math.round(Math.random() * width), 
-                //y: Math.round(Math.random() * height),
-                //x: Math.round(Math.random() * 2),
-                //y: Math.round(Math.random() * 2),
-                x: Math.random() * (max1 - min1) + min1,
-                y: Math.random() * (max2 - min2) + min2,
-                type: type,
-                fill: fill
-            };
+       
 
-        }
-
-        /** 
-         * Generates a specified number of random points of the specified type.
-         */
-        //生成num个type（point or centroid）类型的随机点 
-        function initializePoints(num, type)
-        {
-            var result = [];
-            for (var i = 0; i < num; i++)
-            {
-                var color = colors[i];
-                if (type !== "centroid")
-                {
-                    color = "#ccc";
-                }
-
-                var point = getRandomPoint(type, color);
-                point.id = point.type + "-" + i;
-                //console.log(point);
-                result.push(point);
-
-                //console.log(point.x, point.y,point.type,point.fill)
-                //console.log(point)
-                //console.log(result)
-            }
-            return result;
-        }
-
-        function getPoint(fill,type,num1,num2,num3)
+        function getPoint(fill,type,num1,num2,num3,Md,Mp,Cd,Dp,Hp,W,Ac,Y,Ori)
+        //function getPoint(d,i)
         {
             return {
                 //x: Math.round(Math.random() * width), 
@@ -158,7 +97,21 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
                 y: num2,
                 type: type,
                 fill: fill,
-                id: type +"-"+num3
+                id: type +"-"+num3,
+                Model: Md, 
+                MPG: Mp, 
+                Cylinders: Cd, 
+                Displacement: Dp, 
+                Horsepower: Hp, 
+                Weight: W, 
+                Acceleration: Ac, 
+                Year: Y, 
+                Origin: Ori,
+                //x: xpScale(d.Displacement),
+                //y: ypScale(d.Horsepower/d.Weight),
+                //type: "#ccc",
+                //fill: "point",
+                //id: type +"-"+u,
                 };
 
         }
@@ -173,37 +126,32 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
             //var point;
             var color = "#ccc";
             
-            var point = getPoint(color,"point",xpScale(data[i].Displacement),ypScale(data[i].Horsepower/data[i].Weight),i);
-            
-            points.push(point);     
+            var point = getPoint(color,"point",xpScale(data[i].Displacement),ypScale(data[i].Horsepower/data[i].Weight), i, 
+            data[i].Model, 
+            data[i].MPG, 
+            data[i].Cylinders, 
+            data[i].Displacement, 
+            data[i].Horsepower, 
+            data[i].Weight, 
+            data[i].Acceleration, 
+            data[i].Year, 
+            data[i].Origin);
+            //var point = getPoint(data[i],i);
+            console.log(point);
+            points.push(point); 
             
         };
-        //console.log(points);
-    /* function initializedataPoints(){
-            var result = [];
-            d3.csv("data/data.csv", function(data) {
-                
-                for (var i = 0; i < data.length; i++) {
-                //datapoints[i].x=data[i].Displacement;
-                //datapoints[i].y=ypScale(data[i].Horsepower/data[i].Weight);
-                //datapoints[i].id="point-" + i;
-                //datapoints[i].type="point";
-                //datapoints[i].fill="#ccc";
-                //var point;
-                var color = "#ccc";
-                var point = getPoint(color,"point",xpScale(data[i].Displacement),ypScale(data[i].Horsepower/data[i].Weight),i);
-                //console.log(point);
-                result.push(point);     
-                
-                }
-                //console.log(result);
-                points=result;
-                //console.log(points);
-                
-            })
-            console.log(points);
+        
             
-        }*/
+        /**
+         * Computes the euclidian distance between two points.
+         */
+        function getEuclidianDistance(a, b)
+        {
+            var dx = b.x - a.x,
+                dy = b.y - a.y;
+            return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+        }
         /**
          * Find the centroid that is closest to the specified point.
          */
@@ -218,9 +166,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
             {
                 var distance = getEuclidianDistance(d, point);
                 
-                //if(distance > closecenter.distance){
-                    //console.log(distance)
-                //}
+                
                 // Only update when the centroid is closer
                 if (distance < closecenter.distance)
                 {
@@ -229,11 +175,8 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
                 }
                 
             });
-                if(closecenter.i==-1){
-                    console.log(closecenter.distance);
-                    console.log(point)
-                }
-            //console.log(closecenter.i);
+             
+           
             return (centroids[closecenter.i]); //有-1出现
             
         }
@@ -330,29 +273,25 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
                         {
                             return 3;
                         }
-                    });
+                    })
+                	
+                .html("We ask for your age only for statistical purposes.")	
+                        
+                
 
             // Update old elements as needed
             circle
                 .transition()
                 .delay(10).duration(200)
-                //.ease('bounce')
                 .attr("cx", function(d)
-                {
-                    //return d.x;
-                    return xScale(d.x)
-                        //return console.log(xScale(d.x), d.x), xScale(d.x)
+                { 
+                    return xScale(d.x)       
                 })
                 .attr("cy", function(d)
                 {
-                    //return d.y;
-                    return yScale(d.y)
-                        //return console.log(yScale(d.y)), yScale(d.y)
+                    return yScale(d.y)   
                 })
-                // .style("fill", function(d)
-                // {
-                //     return d.fill;
-                // });
+               
                 .style("fill", function(d, i)
                 {
                     if (d.type == "centroid")
@@ -364,10 +303,10 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
                         return d.fill;
                     }
                 });
+                //.attr("title", "We ask for your age only for statistical purposes.");
+                
 
-            //console.log(data)
-
-            // Remove old nodes
+            // delete old circles.
             circle.exit().remove();
         }
 
@@ -410,10 +349,12 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
          */
         function initialize()
         {
-            centroids = initializePoints(numClusters, "centroid");
-            //points = initializePoints(numPoints, "point");
-            //initializedataPoints();  //points 之中没添加到点。
-            //console.log(points);
+            
+           
+            centroids =[{fill: "#1f77b4", id: "centroid-0", type: "centroid", x: 2.2144482565467025, y: 5.362025436133076}, 
+            {fill: "#ff7f0e", id: "centroid-1", type: "centroid", x: -0.2144482565467025, y: 5.335508776339737},
+            {fill: "#2ca02c", id: "centroid-2", type: "centroid", x: 1.2144482565467025, y: 5.324098858125044}];
+            console.log(centroids);
             update();
             //console.log(points);
             var interval = setInterval(function()
@@ -433,5 +374,9 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
 
         // Call the main function
         initialize();
+        //$( cycle ).tooltip();
+        //$( function() {
+            //$( document ).tooltip();
+          //} );
     });
 }
