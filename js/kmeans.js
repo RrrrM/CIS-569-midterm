@@ -15,6 +15,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
     var iter = 1;
     var centroids = [];
     var points = [];
+    var datapoints = [];
 
 
 
@@ -40,6 +41,16 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
     var min2 = -4;  //-3
     var max2 = 4;   //3
 
+    var xpScale = d3.scale.linear()
+        .domain([455, 68])                //改为displacement的范围
+        .range([3, -4])
+        .clamp('true');
+    
+    var ypScale = d3.scale.linear()
+        .domain([0.020557,0.07291])                //改为HP/W的范围
+        .range([4, -4])
+        .clamp('true');
+        //.nice();
 
     var xScale = d3.scale.linear()
         .domain([3, -4])                //改为displacement的范围
@@ -120,6 +131,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
 
             var point = getRandomPoint(type, color);
             point.id = point.type + "-" + i;
+            console.log(point);
             result.push(point);
 
             //console.log(point.x, point.y,point.type,point.fill)
@@ -129,6 +141,44 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
         return result;
     }
 
+    function getPoint(fill,type,num1,num2,num3)
+    {
+        return {
+            //x: Math.round(Math.random() * width), 
+            //y: Math.round(Math.random() * height),
+            //x: Math.round(Math.random() * 2),
+            //y: Math.round(Math.random() * 2),
+            x: num1,
+            y: num2,
+            type: type,
+            fill: fill,
+            id: type +"-"+num3
+            };
+
+    }
+
+    function initializedataPoints(){
+        var result = [];
+        d3.csv("data/data.csv", function(data) {
+            
+            for (var i = 0; i < data.length; i++) {
+            //datapoints[i].x=data[i].Displacement;
+            //datapoints[i].y=ypScale(data[i].Horsepower/data[i].Weight);
+            //datapoints[i].id="point-" + i;
+            //datapoints[i].type="point";
+            //datapoints[i].fill="#ccc";
+            //var point;
+            var color = "#ccc";
+            var point = getPoint(color,"point",xpScale(data[i].Displacement),ypScale(data[i].Horsepower/data[i].Weight),i);
+            //console.log(point);
+            result.push(point);     
+            
+            }
+            
+        });
+        return result;
+        console.log(result);
+    }
     /**
      * Find the centroid that is closest to the specified point.
      */
@@ -149,6 +199,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
             }
         });
         return (centroids[closecenter.i]);
+        
     }
 
     /**
@@ -156,10 +207,13 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
      */
     function colorizePoints()
     {
+        //console.log(points);
         points.forEach(function(d)
         {
             var closecenter = findClosestCentroid(d);
+            
             d.fill = closecenter.fill;
+            //console.log(d);
         });
     }
 
@@ -289,6 +343,8 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
         d3.selectAll(".label").text(text);
     }
 
+    //var cardata
+    
     /**
      * Executes one iteration of the algorithm:
      * - Fill the points with the color of the closest centroid (this makes it 
@@ -303,7 +359,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
 
         // Colorize the points
         colorizePoints();
-
+        //console.log(points);
         // Move the centroids
         moveCentroids();
 
@@ -317,185 +373,10 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
      */
     function initialize()
     {
-
-        //var fix_centroid = "yes";
-        //var fix_points = "yes"
-
-        // Initialize random points and centroids
-        //centroids = initializePoints(numClusters, "centroid");
-        //points = initializePoints(numPoints, "point");
-
-
-        if (fix_centroid == "yes")
-        {
-            centroids = [
-            {
-                fill: "#1f77b4", //blue
-                id: "centroid-0",
-                type: "centroid",
-                x: 2,   //2   3.8 crash
-                y: 1
-            },
-            {
-                fill: "#ff7f0e", //orange
-                id: "centroid-1",
-                type: "centroid",
-                x: -3,
-                y: 2
-            },
-            {
-                fill: "#2ca02c", //green
-                id: "centroid-2",
-                type: "centroid",
-                x: -0.5,
-                y: -3.5
-            },
-            {
-                fill: "#d62728", //red
-                id: "centroid-3",
-                type: "centroid",
-                x: 0,
-                y: -1
-            }]
-        }
-        else
-        {
-            centroids = initializePoints(numClusters, "centroid");
-        }
-
-
-        if (fix_points == "yes")
-        {
-            points = [
-                {
-                    fill: "#ccc",
-                    id: "point-0",
-                    type: "point",
-                    x: 0.204,
-                    y: 2.939
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-1",
-                    type: "point",
-                    x: -1.6989,
-                    y: 0
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-2",
-                    type: "point",
-                    x: -2.1549,
-                    y: -3
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-3",
-                    type: "point",
-                    x: 1,
-                    y: -2.301
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-4",
-                    type: "point",
-                    x: -1,
-                    y: 2
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-5",
-                    type: "point",
-                    x: 0,
-                    y: 2.929
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-6",
-                    type: "point",
-                    x: 0.301,
-                    y: 2.903
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-7",
-                    type: "point",
-                    x: -1,
-                    y: 0.4771
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-8",
-                    type: "point",
-                    x: -0.3979,
-                    y: 2.929
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-9",
-                    type: "point",
-                    x: -2.096,
-                    y: 0
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-10",
-                    type: "point",
-                    x: -1.0457,
-                    y: 1
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-11",
-                    type: "point",
-                    x: -3,
-                    y: -2.1549
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-12",
-                    type: "point",
-                    x: -3,
-                    y: -1.5228
-                },
-
-                {
-                    fill: "#ccc",
-                    id: "point-13",
-                    type: "point",
-                    x: -1,
-                    y: 0
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-14",
-                    type: "point",
-                    x: 1,
-                    y: -3
-                },
-                {
-                    fill: "#ccc",
-                    id: "point-15",
-                    type: "point",
-                    x: 1.602,
-                    y: -2.301
-                }
-            ]
-        }
-        else
-        {
-            points = initializePoints(numPoints, "point");
-        }
-
-
-
-        //centroids[0]
-
-        //console.log(centroids[0],centroids[1])
-        //console.log(centroids)
-        //console.log(points)
-
-        // initial drawing
+        centroids = initializePoints(numClusters, "centroid");
+        points = initializePoints(numPoints, "point");
+        //points = initializedataPoints();  //points 之中没添加到点。
+        console.log(points);
         update();
 
         var interval = setInterval(function()
@@ -508,7 +389,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
             else
             {
                 clearInterval(interval);
-                setText("Done");
+                ItTime("Done");
             }
         }, 7.5 * 50); //time to start iterations
     }
