@@ -57,13 +57,19 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
             .clamp('true');
             //.nice();
 
-        //console.log(xScale(2))
+        // Define the div for the tooltip
+        var div = d3.select("body").append("div")	
+        .attr("class", "tooltip")				
+        .style("opacity", 0);
 
         //在
         var svg = d3.select(divname).append("svg")
             .attr("id", "chart")
             .attr("width", width + margin.left + margin.right) 
             .attr("height", height + margin.top + margin.bottom) 
+
+        
+
 
         //在head中增加一个迭代计数器  Add a counter of interation time 
         d3.select("#head")
@@ -74,7 +80,8 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
         //在svg中增加一个添加一个存放cycles的group  Add a group for the cycles
         var group = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-
+        
+        
 
 
         
@@ -247,7 +254,7 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
             var data = points.concat(centroids);
 
             //console.log(points)
-
+                    
             // The data join
             var circle = group.selectAll("circle")
             .data(data);
@@ -274,11 +281,28 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
                             return 3;
                         }
                     })
-                	
-                .html("We ask for your age only for statistical purposes.")	
-                        
-                
-
+                //tip     
+                .on("mouseover", function(d) {		
+                    div.transition()		
+                        .duration(100)		
+                        .style("opacity", 0.9);		
+                    div	.html("<strong>Model: </strong><span style='color:red'>"+d.Model
+                            +"</span>,  <br> <strong>MPG:</strong><span style='color:red'>"+d.MPG
+                            +"</span>,  <br> <strong>Cylinders:</strong><span style='color:red'>"+d.Cylinders
+                            +"</span>,  <br> <strong>Displacement:</strong><span style='color:red'> "+d.Displacement
+                            +"</span>,  <br> <strong>Horsepower:</strong><span style='color:red'> "+d.Horsepower
+                            +"</span>,  <br> <strong>Weight:</strong><span style='color:red'> "+d.Weight
+                            +"</span>,  <br> <strong>Acceleration:</strong><span style='color:red'> "+d.Acceleration
+                            +"</span>,  <br> <strong>Year:</strong><span style='color:red'> "+d.Year
+                            +"</span>,  <br> <strong>Origin:</strong><span style='color:red'> "+d.Origin+"</span>")	
+                        .style("left", (d3.event.pageX) + "px")		
+                        .style("top", (d3.event.pageY - 28) + "px");	
+                    })					
+                .on("mouseout", function(d) {		
+                    div.transition()		
+                        .duration(500)		
+                        .style("opacity", 0);	
+                });    
             // Update old elements as needed
             circle
                 .transition()
@@ -302,7 +326,10 @@ function kMeans(divname, w, h, numPoints, numClusters, maxIter)
                     {
                         return d.fill;
                     }
-                });
+                })
+                //设置tip.
+                
+      
                 //.attr("title", "We ask for your age only for statistical purposes.");
                 
 
